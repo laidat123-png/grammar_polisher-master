@@ -3,13 +3,22 @@
 </p>
 
 
-<h1 align="center">English Handbook - Learning</h1>
+<h1 align="center">Parrot Speak English</h1>
 
 <p align="center">
   <img src="images/featureGraphic.png" alt="Feature Graphic" width="80%">
 </p>
 
 ## ✨ Features
+
+<p align="center">
+  <img src="images/1_en-US.png" alt="Feature 1" width="15%">
+  <img src="images/2_en-US.png" alt="Feature 2" width="15%">
+  <img src="images/3_en-US.png" alt="Feature 3" width="15%">
+  <img src="images/4_en-US.png" alt="Feature 4" width="15%">
+  <img src="images/5_en-US.png" alt="Feature 5" width="15%">
+  <img src="images/6_en-US.png" alt="Feature 6" width="15%">
+</p>
 
 Master English Vocabulary & Grammar with Ease!
 
