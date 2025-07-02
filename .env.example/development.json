@@ -1,0 +1,20 @@
+{
+  "TRANSLATION_BASE_URL": "https://translate.googleapis.com",
+  "ANDROID_BANNER_AD_UNIT_ID": "ca-app-pub-3940256099942544/9214589741",
+  "ANDROID_INTERSTITIAL_AD_UNIT_ID": "ca-app-pub-3940256099942544/1033173712",
+  "ANDROID_APP_OPEN_AD_UNIT_ID": "ca-app-pub-3940256099942544/9257395921",
+  "ANDROID_REWARDED_AD_UNIT_ID": "ca-app-pub-3940256099942544/5224354917",
+  "IOS_BANNER_AD_UNIT_ID": "ca-app-pub-3940256099942544/2435281174",
+  "IOS_INTERSTITIAL_AD_UNIT_ID": "ca-app-pub-3940256099942544/4411468910",
+  "IOS_APP_OPEN_AD_UNIT_ID": "ca-app-pub-3940256099942544/5575463023",
+  "IOS_REWARDED_AD_UNIT_ID": "ca-app-pub-3940256099942544/1712485313",
+  "PRIMARY_PRODUCT_ID": "com.alexcao.oxforddictionary.noadsforever",
+  "SECONDARY_PRODUCT_ID": "com.alexcao.oxforddictionary.onedaynoads",
+  "CONTACT_EMAIL": "admin@pullstack.id.vn",
+  "TERMS_OF_USE_URL": "https://pullstack.id.vn/pages/english_handbook/tos.html",
+  "PRIVACY_POLICY_URL": "https://pullstack.id.vn/pages/english_handbook/privacy-policy.html",
+  "APP_URL": "https://pullstack.id.vn/pages/english_handbook/index.html",
+  "AMPLITUDE_API_KEY": "f44115f766a6f4890b3db1b3ebc73fb9",
+  "ANDROID_FLASHCARD_APP_URL": "https://pullstack.id.vn/pages/flashcard",
+  "IOS_FLASHCARD_APP_URL": "https://apps.apple.com/us/app/flashcard-collections/id6741834066"
+}
