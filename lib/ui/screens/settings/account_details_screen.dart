@@ -188,7 +188,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen>
                             children: [
                               CircleAvatar(
                                 radius: 50,
-                                backgroundColor: Colors.white,
+                                backgroundColor: Colors.grey[400],
                                 backgroundImage: userData['avatar'] != null &&
                                         kAvatarOptions
                                             .contains(userData['avatar'])

@@ -12,6 +12,7 @@ import '../../commons/rounded_button.dart';
 import '../../commons/selection_area_with_search.dart';
 import '../vocabulary/widgets/vocabulary_item.dart';
 import 'onboarding_page.dart';
+import '../../../utils/global_values.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -119,12 +120,8 @@ An **adjective** is a word that describes or modifies a noun or pronoun by provi
 
   void _onNext() {
     if (_pageController?.page?.toInt() == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginEnglish(),
-        ),
-      );
+      GlobalValues.isShowOnboarding = true;
+      context.go('/login');
       return;
     }
     _pageController?.nextPage(

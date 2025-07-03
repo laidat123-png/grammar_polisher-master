@@ -195,35 +195,35 @@ class GrammarScreen extends StatefulWidget {
         ]),
     const CategoryData(
         id: 4,
-        title: "Others",
-        description: "Other grammar topics",
+        title: "Khác",
+        description: "Các chủ đề ngữ pháp khác",
         progress: 0,
         total: 5,
         lessons: [
           Lesson(
               id: 33,
-              title: "Word Families",
+              title: "Gia đình từ",
               subTitle: "Các từ có liên quan với nhau",
               path: Assets.wordFamiliesWordFamilies),
           Lesson(
               id: 34,
-              title: "Phrasal Verbs",
+              title: "Cụm động từ",
               subTitle: "Động từ + giới từ hoặc trạng từ",
               path: Assets.grammarPhrasalVerbs),
           Lesson(
               id: 35,
-              title: "Idioms",
+              title: "Thành ngữ",
               subTitle: "Thành ngữ có nghĩa khác với nghĩa từng từ riêng lẻ",
               path: Assets.grammarIdioms),
           Lesson(
               id: 36,
-              title: "Proverbs",
+              title: "Tục ngữ",
               subTitle:
                   "Câu nói ngắn gọn đưa ra lời khuyên hoặc thể hiện quan điểm",
               path: Assets.grammarProverbs),
           Lesson(
               id: 37,
-              title: "Quantifiers",
+              title: "Định lượng",
               subTitle: "Các từ miêu tả số lượng",
               path: Assets.grammarQuantifiers),
         ]),

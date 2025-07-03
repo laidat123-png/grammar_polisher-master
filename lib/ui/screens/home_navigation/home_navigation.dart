@@ -16,6 +16,9 @@ import '../streak/bloc/streak_bloc.dart';
 import '../vocabulary/bloc/vocabulary_bloc.dart';
 import 'widget/streak_button.dart';
 
+// Thêm biến toàn cục để lưu index tab hiện tại
+int globalTabIndex = 0;
+
 class HomeNavigation extends StatefulWidget {
   final StatefulNavigationShell child;
 
@@ -61,7 +64,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
     final colorScheme = Theme.of(context).colorScheme;
 
     final currentRoute = GoRouter.of(context).currentRoute;
-    var selectedIndex = HomeNavigation.routes.indexOf(currentRoute);
+    var selectedIndex = globalTabIndex;
     final selectedColor = colorScheme.primary;
     final unselectedColor = Colors.grey[600]!;
 
@@ -122,7 +125,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
             ),
             child: BottomNavigationBar(
               showUnselectedLabels: true,
-              currentIndex: widget.child.currentIndex,
+              currentIndex: selectedIndex,
               onTap: (index) async {
                 final quizStateManager = QuizStateManager();
                 if (quizStateManager.isQuizInProgressNotifier.value) {
@@ -148,9 +151,11 @@ class _HomeNavigationState extends State<HomeNavigation> {
                   );
                   if (shouldExit == true) {
                     quizStateManager.setQuizInProgress(false);
+                    globalTabIndex = index;
                     widget.child.goBranch(index);
                   }
                 } else {
+                  globalTabIndex = index;
                   widget.child.goBranch(index);
                 }
               },

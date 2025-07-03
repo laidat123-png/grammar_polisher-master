@@ -67,7 +67,7 @@ android {
     productFlavors {
         development {
             dimension "default"
-            resValue "string", "app_name", "D-English Handbook"
+            resValue "string", "app_name", "Parrot Speak English"
             applicationIdSuffix ".dev"
         }
     }

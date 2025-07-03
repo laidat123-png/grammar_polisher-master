@@ -5,6 +5,7 @@ import 'registerEnglish.dart';
 import 'QuenmatkhauEnglish.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginEnglish extends StatefulWidget {
   const LoginEnglish({Key? key}) : super(key: key);
@@ -86,6 +87,9 @@ class _LoginEnglishState extends State<LoginEnglish>
       setState(() {
         _loginSuccess = false;
       });
+      // Lưu trạng thái đăng nhập
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
       if (mounted) {
         context.go(RoutePaths.vocabulary);
       }

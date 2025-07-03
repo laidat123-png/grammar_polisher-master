@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'configs/di.dart';
@@ -22,6 +23,10 @@ import 'ui/screens/settings/bloc/settings_bloc.dart';
 import 'utils/ad/consent_manager.dart';
 import 'utils/global_values.dart';
 import 'utils/local_notifications_tools.dart';
+import 'ui/screens/vocabulary/bloc/vocabulary_bloc.dart';
+import 'ui/screens/notifications/bloc/notifications_bloc.dart';
+import 'ui/screens/grammar/bloc/lesson_bloc.dart';
+import 'ui/screens/streak/bloc/streak_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,17 +75,26 @@ void main() async {
   tz.initializeTimeZones();
   final currentTimeZone = await FlutterTimezone.getLocalTimezone();
   tz.setLocalLocation(tz.getLocation(currentTimeZone));
+
+  // Kiểm tra trạng thái đăng nhập và onboarding
+  final prefs = await SharedPreferences.getInstance();
+  final isShowOnboarding = prefs.getBool('isShowOnboarding') ?? false;
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  final initialLocation = !isShowOnboarding
+      ? '/onboarding'
+      : (isLoggedIn ? '/vocabulary' : '/login');
+
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => DI().sl<SettingsBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => DI().sl<TranslateCubit>(),
-        ),
+        BlocProvider(create: (context) => DI().sl<SettingsBloc>()),
+        BlocProvider(create: (context) => DI().sl<TranslateCubit>()),
+        BlocProvider(create: (context) => DI().sl<VocabularyBloc>()),
+        BlocProvider(create: (context) => DI().sl<NotificationsBloc>()),
+        BlocProvider(create: (context) => DI().sl<LessonBloc>()),
+        BlocProvider(create: (context) => DI().sl<StreakBloc>()),
       ],
-      child: App(),
+      child: App(initialLocation: initialLocation),
     ),
   );
 }

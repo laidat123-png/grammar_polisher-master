@@ -133,7 +133,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 child: CircleAvatar(
                   radius: 36,
                   backgroundImage: AssetImage(path),
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: Colors.grey[400],
                 ),
               );
             }).toList(),
@@ -172,7 +172,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 onTap: _showAvatarPicker,
                 child: CircleAvatar(
                   radius: 45,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.grey[400],
                   backgroundImage: _selectedAvatar != null
                       ? AssetImage(_selectedAvatar!)
                       : null,

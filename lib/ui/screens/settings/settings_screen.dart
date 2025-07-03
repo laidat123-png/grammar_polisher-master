@@ -22,6 +22,7 @@ import 'bloc/settings_bloc.dart';
 import 'widgets/profile_field.dart';
 import 'widgets/theme_item.dart';
 import 'account_details_screen.dart';
+import '../home_navigation/home_navigation.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -129,30 +130,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context.watch<NotificationsBloc>().state.isNotificationsGranted;
     final isDarkMode = brightness == Brightness.dark;
 
-    return BlocBuilder<SettingsBloc, SettingsState>(
-      builder: (context, state) {
-        final settingsSnapshot = state.settingsSnapshot;
-        final themeMode = ThemeMode.values[settingsSnapshot.themeMode];
-        String themeLabel;
-        if (themeMode == ThemeMode.system) {
-          final sysBrightness = MediaQuery.of(context).platformBrightness;
-          themeLabel = sysBrightness == Brightness.dark ? 'Tối' : 'Sáng';
-        } else if (themeMode == ThemeMode.dark) {
-          themeLabel = 'Tối';
-        } else {
-          themeLabel = 'Sáng';
-        }
-        return BasePage(
-          title: "Cài Đặt",
-          padding: EdgeInsets.zero,
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+    return BasePage(
+      title: "Cài Đặt",
+      padding: EdgeInsets.zero,
+      child: Container(
+        color: isDarkMode ? const Color(0xFF181A20) : Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -165,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 44,
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.grey[400],
                         backgroundImage: avatarAsset != null
                             ? AssetImage(avatarAsset!)
                             : null,
@@ -192,479 +177,453 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Thông tin tài khoản
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AccountDetailsScreen(),
-                                  ),
-                                );
-                                // Sau khi quay lại, reload tên user
-                                _fetchUserName();
-                              },
-                              child: ListTile(
-                                leading: Icon(Icons.person_outline,
-                                    color: colorScheme.primary, size: 32),
-                                title: Text(
-                                  "Thông tin tài khoản",
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text("Quản lý thông tin cá nhân"),
-                                trailing:
-                                    Icon(Icons.arrow_forward_ios, size: 16),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
+                // Thông tin tài khoản
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AccountDetailsScreen(),
+                        ),
+                      );
+                      // Sau khi quay lại, reload tên user
+                      _fetchUserName();
+                    },
+                    child: ListTile(
+                      leading: Icon(Icons.person_outline,
+                          color: colorScheme.primary, size: 32),
+                      title: Text(
+                        "Thông tin tài khoản",
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text("Quản lý thông tin cá nhân"),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Mẫu từ vựng - hiệu ứng động
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 700),
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, (1 - value) * 30),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: VocabularyItem(
+                      word: Words.sampleWord,
+                      viewOnly: true,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Màu sắc - hiệu ứng scale khi chọn
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.palette, color: colorScheme.primary),
+                            SizedBox(width: 8),
+                            Text(
+                              "Màu sắc",
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Mẫu từ vựng - hiệu ứng động
-                          TweenAnimationBuilder<double>(
-                            tween: Tween(begin: 0, end: 1),
-                            duration: const Duration(milliseconds: 700),
-                            builder: (context, value, child) {
-                              return Opacity(
-                                opacity: value,
-                                child: Transform.translate(
-                                  offset: Offset(0, (1 - value) * 30),
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(0),
-                              child: VocabularyItem(
-                                word: Words.sampleWord,
-                                viewOnly: true,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Màu sắc - hiệu ứng scale khi chọn
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(Icons.palette,
-                                          color: colorScheme.primary),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Màu sắc",
-                                        style: textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: List.generate(
-                                          SettingsScreen.seeks.length, (i) {
-                                        final color = SettingsScreen.seeks[i];
-                                        final isSelected =
-                                            settingsSnapshot.seek == i;
-                                        return GestureDetector(
-                                          onTap: () =>
-                                              _onChangeColor(context, i),
-                                          child: AnimatedScale(
-                                            scale: isSelected ? 1.2 : 1.0,
-                                            duration: const Duration(
-                                                milliseconds: 200),
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 6),
-                                              width: 32,
-                                              height: 32,
-                                              decoration: BoxDecoration(
-                                                color: color,
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  if (isSelected)
-                                                    BoxShadow(
-                                                      color: color
-                                                          .withOpacity(0.4),
-                                                      blurRadius: 8,
-                                                      offset: Offset(0, 2),
-                                                    ),
-                                                ],
-                                                border: isSelected
-                                                    ? Border.all(
-                                                        color:
-                                                            Colors.blueAccent,
-                                                        width: 2)
-                                                    : null,
-                                              ),
-                                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                List.generate(SettingsScreen.seeks.length, (i) {
+                              final color = SettingsScreen.seeks[i];
+                              final isSelected = context
+                                      .read<SettingsBloc>()
+                                      .state
+                                      .settingsSnapshot
+                                      .seek ==
+                                  i;
+                              return GestureDetector(
+                                onTap: () => _onChangeColor(context, i),
+                                child: AnimatedScale(
+                                  scale: isSelected ? 1.2 : 1.0,
+                                  duration: const Duration(milliseconds: 200),
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 6),
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        if (isSelected)
+                                          BoxShadow(
+                                            color: color.withOpacity(0.4),
+                                            blurRadius: 8,
+                                            offset: Offset(0, 2),
                                           ),
-                                        );
-                                      }),
+                                      ],
+                                      border: isSelected
+                                          ? Border.all(
+                                              color: Colors.blueAccent,
+                                              width: 2)
+                                          : null,
                                     ),
                                   ),
-                                ],
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Chế độ - hiệu ứng động icon
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          transitionBuilder: (child, anim) =>
+                              RotationTransition(turns: anim, child: child),
+                          child: context
+                                      .read<SettingsBloc>()
+                                      .state
+                                      .settingsSnapshot
+                                      .themeMode ==
+                                  ThemeMode.system.index
+                              ? Icon(Icons.wb_sunny,
+                                  color: colorScheme.primary,
+                                  key: ValueKey('sun'))
+                              : Icon(Icons.nightlight_round,
+                                  color: colorScheme.primary,
+                                  key: ValueKey('moon')),
+                        ),
+                        SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Chế độ",
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Chế độ - hiệu ứng động icon
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                            Text(
+                              context
+                                          .read<SettingsBloc>()
+                                          .state
+                                          .settingsSnapshot
+                                          .themeMode ==
+                                      ThemeMode.system.index
+                                  ? 'Tự động'
+                                  : context
+                                              .read<SettingsBloc>()
+                                              .state
+                                              .settingsSnapshot
+                                              .themeMode ==
+                                          ThemeMode.dark.index
+                                      ? 'Tối'
+                                      : 'Sáng',
+                              style: textTheme.bodySmall,
                             ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              child: Row(
-                                children: [
-                                  AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 400),
-                                    transitionBuilder: (child, anim) =>
-                                        RotationTransition(
-                                            turns: anim, child: child),
-                                    child: themeLabel == 'Sáng'
-                                        ? Icon(Icons.wb_sunny,
-                                            color: colorScheme.primary,
-                                            key: ValueKey('sun'))
-                                        : Icon(Icons.nightlight_round,
-                                            color: colorScheme.primary,
-                                            key: ValueKey('moon')),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                          ],
+                        ),
+                        Spacer(),
+                        Switch(
+                          value: context
+                                  .read<SettingsBloc>()
+                                  .state
+                                  .settingsSnapshot
+                                  .themeMode ==
+                              ThemeMode.light.index,
+                          activeColor: Colors.blue,
+                          onChanged: (value) {
+                            _onChangeTheme(
+                                context,
+                                value
+                                    ? ThemeMode.light.index
+                                    : ThemeMode.dark.index);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Liên hệ
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: _openContactPhone,
+                    child: ListTile(
+                      leading: Icon(Icons.phone, color: colorScheme.primary),
+                      title: Text(
+                        "Liên hệ",
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text("Hỗ trợ khách hàng 24/7"),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Hủy tài khoản
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Xác nhận hủy tài khoản'),
+                          content: Text(
+                              'Bạn có chắc chắn muốn hủy tài khoản? Hành động này không thể hoàn tác.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: Text('Không'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text('Đồng ý'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        try {
+                          final user = FirebaseAuth.instance.currentUser;
+                          final uid = user?.uid;
+                          await user?.delete();
+                          if (uid != null) {
+                            try {
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(uid)
+                                  .delete();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Đã xóa tài khoản nhưng không xóa được dữ liệu Firestore: $e')),
+                              );
+                            }
+                          }
+                          if (context.mounted) {
+                            context.go('/login');
+                          }
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'requires-recent-login') {
+                            // Hiện dialog nhập lại mật khẩu
+                            final password = await showDialog<String>(
+                              context: context,
+                              builder: (context) {
+                                final controller = TextEditingController();
+                                return AlertDialog(
+                                  title: Text('Xác thực lại'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        "Chế độ",
-                                        style: textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
+                                          'Vui lòng nhập lại mật khẩu để xác thực trước khi hủy tài khoản.'),
+                                      SizedBox(height: 16),
+                                      TextField(
+                                        controller: controller,
+                                        obscureText: true,
+                                        decoration: InputDecoration(
+                                          labelText: 'Mật khẩu',
                                         ),
                                       ),
-                                      Text(
-                                        themeLabel,
-                                        style: textTheme.bodySmall,
-                                      ),
                                     ],
                                   ),
-                                  Spacer(),
-                                  Switch(
-                                    value: themeLabel == 'Sáng',
-                                    activeColor: Colors.blue,
-                                    onChanged: (value) {
-                                      _onChangeTheme(
-                                          context,
-                                          value
-                                              ? ThemeMode.light.index
-                                              : ThemeMode.dark.index);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Liên hệ
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: _openContactPhone,
-                              child: ListTile(
-                                leading: Icon(Icons.phone,
-                                    color: colorScheme.primary),
-                                title: Text(
-                                  "Liên hệ",
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text("Hỗ trợ khách hàng 24/7"),
-                                trailing:
-                                    Icon(Icons.arrow_forward_ios, size: 16),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Hủy tài khoản
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () async {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text('Xác nhận hủy tài khoản'),
-                                    content: Text(
-                                        'Bạn có chắc chắn muốn hủy tài khoản? Hành động này không thể hoàn tác.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: Text('Không'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        child: Text('Đồng ý'),
-                                      ),
-                                    ],
-                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: Text('Hủy'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context)
+                                          .pop(controller.text),
+                                      child: Text('Xác nhận'),
+                                    ),
+                                  ],
                                 );
-                                if (confirm == true) {
-                                  try {
-                                    final user =
-                                        FirebaseAuth.instance.currentUser;
-                                    final uid = user?.uid;
-                                    await user?.delete();
-                                    if (uid != null) {
-                                      try {
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(uid)
-                                            .delete();
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Đã xóa tài khoản nhưng không xóa được dữ liệu Firestore: $e')),
-                                        );
-                                      }
-                                    }
-                                    if (context.mounted) {
-                                      context.go('/login');
-                                    }
-                                  } on FirebaseAuthException catch (e) {
-                                    if (e.code == 'requires-recent-login') {
-                                      // Hiện dialog nhập lại mật khẩu
-                                      final password = await showDialog<String>(
-                                        context: context,
-                                        builder: (context) {
-                                          final controller =
-                                              TextEditingController();
-                                          return AlertDialog(
-                                            title: Text('Xác thực lại'),
-                                            content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                    'Vui lòng nhập lại mật khẩu để xác thực trước khi hủy tài khoản.'),
-                                                SizedBox(height: 16),
-                                                TextField(
-                                                  controller: controller,
-                                                  obscureText: true,
-                                                  decoration: InputDecoration(
-                                                    labelText: 'Mật khẩu',
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                                child: Text('Hủy'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(context)
-                                                        .pop(controller.text),
-                                                child: Text('Xác nhận'),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                      if (password != null &&
-                                          password.isNotEmpty) {
-                                        try {
-                                          final user =
-                                              FirebaseAuth.instance.currentUser;
-                                          final email = user?.email;
-                                          final uid = user?.uid;
-                                          if (user != null && email != null) {
-                                            final cred =
-                                                EmailAuthProvider.credential(
-                                                    email: email,
-                                                    password: password);
-                                            await user
-                                                .reauthenticateWithCredential(
-                                                    cred);
-                                            await user.delete();
-                                            if (uid != null) {
-                                              try {
-                                                await FirebaseFirestore.instance
-                                                    .collection('users')
-                                                    .doc(uid)
-                                                    .delete();
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                      content: Text(
-                                                          'Đã xóa tài khoản nhưng không xóa được dữ liệu Firestore: $e')),
-                                                );
-                                              }
-                                            }
-                                            if (context.mounted) {
-                                              context.go('/login');
-                                            }
-                                          }
-                                        } on FirebaseAuthException catch (e2) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Xác thực thất bại: ${e2.message ?? e2.code}')),
-                                          );
-                                        } catch (e2) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Có lỗi xảy ra khi xác thực: $e2')),
-                                          );
-                                        }
-                                      }
-                                    } else {
+                              },
+                            );
+                            if (password != null && password.isNotEmpty) {
+                              try {
+                                final user = FirebaseAuth.instance.currentUser;
+                                final email = user?.email;
+                                final uid = user?.uid;
+                                if (user != null && email != null) {
+                                  final cred = EmailAuthProvider.credential(
+                                      email: email, password: password);
+                                  await user.reauthenticateWithCredential(cred);
+                                  await user.delete();
+                                  if (uid != null) {
+                                    try {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(uid)
+                                          .delete();
+                                    } catch (e) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                             content: Text(
-                                                'Không thể hủy tài khoản: ${e.message ?? e.code}')),
+                                                'Đã xóa tài khoản nhưng không xóa được dữ liệu Firestore: $e')),
                                       );
                                     }
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Không thể hủy tài khoản: $e')),
-                                    );
+                                  }
+                                  if (context.mounted) {
+                                    context.go('/login');
                                   }
                                 }
-                              },
-                              child: ListTile(
-                                leading: Icon(Icons.delete_forever,
-                                    color: Colors.red),
-                                title: Text(
-                                  "Hủy tài khoản",
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Đăng xuất
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                            color: isDarkMode
-                                ? Color(0xFF1E1E1E)
-                                : Colors.white, // Màu card tùy theo chế độ
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () async {
-                                await FirebaseAuth.instance.signOut();
-                                if (context.mounted) {
-                                  context.go('/login');
-                                }
-                              },
-                              child: ListTile(
-                                leading: Icon(Icons.logout, color: Colors.red),
-                                title: Text(
-                                  "Đăng xuất",
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                            ),
-                          ),
-                        ],
+                              } on FirebaseAuthException catch (e2) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Xác thực thất bại: ${e2.message ?? e2.code}')),
+                                );
+                              } catch (e2) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Có lỗi xảy ra khi xác thực: $e2')),
+                                );
+                              }
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Không thể hủy tài khoản: ${e.message ?? e.code}')),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Không thể hủy tài khoản: $e')),
+                          );
+                        }
+                      }
+                    },
+                    child: ListTile(
+                      leading: Icon(Icons.delete_forever, color: Colors.red),
+                      title: Text(
+                        "Hủy tài khoản",
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
                       ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     ),
                   ),
                 ),
-                BannerAdWidget(),
+
+                const SizedBox(height: 16),
+
+                // Đăng xuất
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () async {
+                      await FirebaseAuth.instance.signOut();
+                      if (context.mounted) {
+                        context.go('/login');
+                      }
+                    },
+                    child: ListTile(
+                      leading: Icon(Icons.logout, color: Colors.red),
+                      title: Text(
+                        "Đăng xuất",
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -681,12 +640,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _isSelectingTheme = false;
     });
+    // Điều hướng lại đúng tab đang chọn sau khi đổi theme
+    Future.delayed(const Duration(milliseconds: 100), () {
+      context.go(HomeNavigation.routes[globalTabIndex]);
+    });
   }
 
   void _onChangeColor(BuildContext context, int colorIndex) {
     context
         .read<SettingsBloc>()
         .add(SettingsEvent.saveSettings(seek: colorIndex));
+    // Điều hướng lại đúng tab đang chọn sau khi đổi màu sắc
+    Future.delayed(const Duration(milliseconds: 100), () {
+      context.go(HomeNavigation.routes[globalTabIndex]);
+    });
   }
 
   Future<void> _openContactPhone() async {

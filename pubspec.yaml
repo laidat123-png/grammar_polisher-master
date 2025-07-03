@@ -78,6 +78,7 @@ dependencies:
   flutter_tts: ^4.0.2
   speech_to_text: ^7.1.0
   permission_handler: ^11.3.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -166,3 +167,7 @@ flutter:
     - assets/md/grammar/sentences/
     - assets/md/speaking/
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logovet.png" 
