@@ -64,7 +64,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
 
     return SelectionAreaWithSearch(
       child: BasePage(
-        title: widget.word.word,
+        title: 'Chi tiết từ',
         actions: [
           IconButton(
             icon: Icon(
@@ -80,9 +80,10 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 4,
                 children: [
                   Text(
                     widget.word.word,
@@ -91,13 +92,11 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   Phonetic(
                     phonetic: widget.word.phonetic,
                     phoneticText: widget.word.phoneticText,
                     backgroundColor: CustomColors.green,
                   ),
-                  const SizedBox(width: 8),
                   Phonetic(
                     phonetic: widget.word.phoneticAm,
                     phoneticText: widget.word.phoneticAmText,
