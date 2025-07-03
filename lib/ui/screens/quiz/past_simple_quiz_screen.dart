@@ -103,12 +103,7 @@ class _PastSimpleQuizScreenState extends State<PastSimpleQuizScreen> {
       'userAnswers': _userAnswers,
       'quizKey': 'past_simple_quiz',
     };
-
-    // Navigate directly to results screen
-    context.push(
-      RoutePaths.quiz + '/quiz_result',
-      extra: quizResult,
-    );
+    context.pop(quizResult);
   }
 
   @override
@@ -169,7 +164,7 @@ class _PastSimpleQuizScreenState extends State<PastSimpleQuizScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Luyện tập thì QKĐ',
+                    'Luyện tập thì Quá Khứ Đơn',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Container(

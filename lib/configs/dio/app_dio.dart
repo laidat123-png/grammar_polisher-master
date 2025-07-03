@@ -31,7 +31,7 @@ class TranslationDio extends AppDio {
   Dio _get() {
     return Dio()
       ..options = BaseOptions(
-        baseUrl: const String.fromEnvironment("TRANSLATION_BASE_URL"),
+        baseUrl: "https://translate.googleapis.com",
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

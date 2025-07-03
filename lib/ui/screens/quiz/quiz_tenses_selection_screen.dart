@@ -169,7 +169,7 @@ class _QuizTenseTileState extends State<QuizTenseTile> {
                           );
                         },
                         icon: const Icon(Icons.visibility, size: 18),
-                        label: const Text('Xem chi tiết'),
+                        label: const Text('Xem'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,

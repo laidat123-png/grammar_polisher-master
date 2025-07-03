@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import 'dialogs/translation_dialog.dart';
 
@@ -8,11 +9,13 @@ class SelectionAreaWithSearch extends StatefulWidget {
   const SelectionAreaWithSearch({super.key, required this.child});
 
   @override
-  State<SelectionAreaWithSearch> createState() => _SelectionAreaWithSearchState();
+  State<SelectionAreaWithSearch> createState() =>
+      _SelectionAreaWithSearchState();
 }
 
 class _SelectionAreaWithSearchState extends State<SelectionAreaWithSearch> {
   String? _selectedText;
+  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,8 @@ class _SelectionAreaWithSearchState extends State<SelectionAreaWithSearch> {
           });
         },
         contextMenuBuilder: (context, editableTextState) {
-          final List<ContextMenuButtonItem> buttonItems = editableTextState.contextMenuButtonItems;
+          final List<ContextMenuButtonItem> buttonItems =
+              editableTextState.contextMenuButtonItems;
           buttonItems.insert(
             0,
             ContextMenuButtonItem(

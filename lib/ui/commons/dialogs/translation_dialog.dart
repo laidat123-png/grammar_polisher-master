@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../constants/languages.dart';
 import '../../../core/debouncer.dart';
-import '../../../data/models/extra_translation.dart';
 import '../../blocs/translate/translate_cubit.dart';
 import '../rounded_button.dart';
 import 'language_picker_dialog.dart';
+import '../../../data/models/extra_translation.dart';
 
 class TranslateDialog extends StatefulWidget {
   final String initialText;
@@ -23,8 +23,10 @@ class _TranslateDialogState extends State<TranslateDialog> {
   late TextEditingController _targetController;
   bool _showAllExtraTranslations = false;
   late ScrollController _scrollController;
-  Language _source = Language.languages.firstWhere((element) => element.code == 'en');
-  Language _target = Language.languages.firstWhere((element) => element.code == 'ja');
+  Language _source =
+      Language.languages.firstWhere((element) => element.code == 'en');
+  Language _target =
+      Language.languages.firstWhere((element) => element.code == 'ja');
   final Debouncer _debouncer = Debouncer(delay: Duration(milliseconds: 500));
 
   @override
@@ -37,7 +39,8 @@ class _TranslateDialogState extends State<TranslateDialog> {
         }
       },
       builder: (context, state) {
-        List<ExtraTranslation> extraTranslations = state.translateSnapshot?.moreTranslations ?? [];
+        List<ExtraTranslation> extraTranslations =
+            state.translateSnapshot?.moreTranslations ?? [];
         return AlertDialog(
           insetPadding: EdgeInsets.zero,
           shadowColor: Colors.transparent,
@@ -62,8 +65,11 @@ class _TranslateDialogState extends State<TranslateDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            IconButton(onPressed: () {}, icon: const Icon(Icons.translate)),
-                            Text("Translate", style: Theme.of(context).textTheme.bodyLarge),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.translate)),
+                            Text("Translate",
+                                style: Theme.of(context).textTheme.bodyLarge),
                             IconButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
@@ -114,7 +120,13 @@ class _TranslateDialogState extends State<TranslateDialog> {
                                 },
                                 maxLines: 1,
                                 onSubmitted: _translate,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
                                 decoration: InputDecoration(
                                   hintText: "Type your translation here",
                                   border: OutlineInputBorder(
@@ -122,7 +134,9 @@ class _TranslateDialogState extends State<TranslateDialog> {
                                     borderSide: BorderSide.none,
                                   ),
                                   filled: true,
-                                  fillColor: Theme.of(context).colorScheme.primaryContainer,
+                                  fillColor: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
                                 ),
                               ),
                             ),
@@ -143,14 +157,24 @@ class _TranslateDialogState extends State<TranslateDialog> {
                             children: [
                               Expanded(
                                 child: Divider(
-                                  color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withAlpha(100),
                                 ),
                               ),
                               IconButton(
-                                  onPressed: _onSwitch, icon: Icon(Icons.swap_vert, color: Theme.of(context).colorScheme.primary)),
+                                  onPressed: _onSwitch,
+                                  icon: Icon(Icons.swap_vert,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary)),
                               Expanded(
                                 child: Divider(
-                                  color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withAlpha(100),
                                 ),
                               ),
                             ],
@@ -192,7 +216,13 @@ class _TranslateDialogState extends State<TranslateDialog> {
                             Expanded(
                               child: TextField(
                                 enabled: false,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
                                 controller: _targetController,
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
@@ -200,25 +230,29 @@ class _TranslateDialogState extends State<TranslateDialog> {
                                 ),
                               ),
                             ),
-                            if (state.translateSnapshot != null && state.translateSnapshot!.type != null)
+                            if (state.translateSnapshot != null &&
+                                state.translateSnapshot!.type != null)
                               FilterChip(
                                 label: Text(state.translateSnapshot!.type!),
                                 onSelected: (value) {},
                                 selected: true,
                                 showCheckmark: false,
                               ),
-                            if ((state.translateSnapshot?.content ?? "").isNotEmpty) IconButton(
-                              onPressed: _onCopy,
-                              icon: Icon(
-                                Icons.copy,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 16,
-                              ),
-                            )
+                            if ((state.translateSnapshot?.content ?? "")
+                                .isNotEmpty)
+                              IconButton(
+                                onPressed: _onCopy,
+                                icon: Icon(
+                                  Icons.copy,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 16,
+                                ),
+                              )
                           ],
                         ),
                         if (state.translateSnapshot?.spelling != null)
-                          Text(state.translateSnapshot!.spelling!, style: Theme.of(context).textTheme.bodyMedium),
+                          Text(state.translateSnapshot!.spelling!,
+                              style: Theme.of(context).textTheme.bodyMedium),
                         const SizedBox(height: 8),
                         RoundedButton(
                           borderRadius: 16,
@@ -249,21 +283,29 @@ class _TranslateDialogState extends State<TranslateDialog> {
                             children: [
                               Row(
                                 children: [
-                                  Text("More translations (${extraTranslations.length})",
-                                      style: Theme.of(context).textTheme.titleSmall),
+                                  Text(
+                                      "More translations (${extraTranslations.length})",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall),
                                   const Spacer(),
                                   if (extraTranslations.length > 1)
                                     TextButton(
                                         onPressed: () {
                                           setState(() {
-                                            _showAllExtraTranslations = !_showAllExtraTranslations;
+                                            _showAllExtraTranslations =
+                                                !_showAllExtraTranslations;
                                           });
                                         },
-                                        child: Text(_showAllExtraTranslations ? "Hide" : "Show all")),
+                                        child: Text(_showAllExtraTranslations
+                                            ? "Hide"
+                                            : "Show all")),
                                 ],
                               ),
                               ...List.generate(
-                                _showAllExtraTranslations ? extraTranslations.length : 1,
+                                _showAllExtraTranslations
+                                    ? extraTranslations.length
+                                    : 1,
                                 (index) {
                                   var translation = extraTranslations[index];
                                   return Padding(
@@ -271,16 +313,21 @@ class _TranslateDialogState extends State<TranslateDialog> {
                                     child: Row(
                                       children: [
                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Text(translation.label, style: Theme.of(context).textTheme.titleSmall),
+                                            Text(translation.label,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
                                             const SizedBox(height: 8),
-                                            ...translation.content.map((e) => FilterChip(
-                                                  label: Text(e),
-                                                  onSelected: (bool value) {
-                                                    _onPick(e);
-                                                  },
-                                                )),
+                                            ...translation.content
+                                                .map((e) => FilterChip(
+                                                      label: Text(e),
+                                                      onSelected: (bool value) {
+                                                        _onPick(e);
+                                                      },
+                                                    )),
                                           ],
                                         ),
                                         const Spacer(),
@@ -327,11 +374,11 @@ class _TranslateDialogState extends State<TranslateDialog> {
     _sourceController = TextEditingController();
     _targetController = TextEditingController();
     _scrollController = ScrollController();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final languageCode = WidgetsBinding.instance.window.locale.languageCode;
       if (languageCode != 'en') {
-        final language = Language.languages.firstWhere((element) => element.code == languageCode);
+        final language = Language.languages
+            .firstWhere((element) => element.code == languageCode);
         setState(() {
           _target = language;
         });
@@ -356,7 +403,8 @@ class _TranslateDialogState extends State<TranslateDialog> {
       return;
     }
     Clipboard.setData(ClipboardData(text: _targetController.text));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Copied to clipboard")));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Copied to clipboard")));
   }
 
   void _onDelete() {
