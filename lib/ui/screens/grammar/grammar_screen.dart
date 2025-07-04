@@ -58,7 +58,7 @@ class GrammarScreen extends StatefulWidget {
               path: Assets.pastPastContinuousTense),
           Lesson(
               id: 7,
-              title: 'Qua khứ hoàn thành',
+              title: 'Quá khứ hoàn thành',
               subTitle: 'S + had + V3 + O',
               path: Assets.pastPastPerfectTense),
           Lesson(
