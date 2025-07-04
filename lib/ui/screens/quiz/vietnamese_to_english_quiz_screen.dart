@@ -8,6 +8,11 @@ import 'package:grammar_polisher/data/repositories/oxford_words_repository.dart'
 import 'package:grammar_polisher/data/data_sources/assets_data.dart'; // Contains AssetsDataImpl
 import 'package:grammar_polisher/data/data_sources/local_data.dart'; // Contains HiveDatabase (LocalDataImpl)
 import 'package:grammar_polisher/configs/hive/app_hive.dart';
+import 'package:grammar_polisher/ui/screens/quiz/quiz_result_screen.dart';
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:grammar_polisher/navigation/app_router.dart';
+import 'package:grammar_polisher/utils/quiz_state_manager.dart';
 
 class VietnameseToEnglishQuizScreen extends StatefulWidget {
   const VietnameseToEnglishQuizScreen({super.key});
@@ -123,8 +128,9 @@ class _VietnameseToEnglishQuizScreenState
     _generateQuestion();
   }
 
-  void _endQuiz() {
-    final Map<String, dynamic> quizResult = {
+  void _endQuiz() async {
+    if (!mounted) return;
+    final quizResult = {
       'score': _score,
       'totalQuestions': _numberOfQuestions,
       'quizDuration': DateTime.now().difference(_quizStartTime),
@@ -132,8 +138,17 @@ class _VietnameseToEnglishQuizScreenState
       'quizKey': 'vietnamese_to_english_quiz',
       'questionDetails': _questionDetails,
     };
-    Navigator.of(context).pop(quizResult);
+    await QuizStateManager()
+        .setQuizResult('vietnamese_to_english_quiz', quizResult);
+    Future.delayed(Duration.zero, () {
+      context.go(
+        '/quiz/quiz_result',
+        extra: quizResult,
+      );
+    });
   }
+
+  bool get isLastQuestion => _questionDetails.length >= _numberOfQuestions;
 
   @override
   Widget build(BuildContext context) {
@@ -244,21 +259,20 @@ class _VietnameseToEnglishQuizScreenState
                       ),
                     const SizedBox(height: 16),
                     InkWell(
-                      onTap: _showAnswer ? _nextQuestion : null,
+                      onTap: _showAnswer
+                          ? (isLastQuestion ? _endQuiz : _nextQuestion)
+                          : null,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
                           color: _showAnswer
-                              ? const Color(
-                                  0xFF3A5998) // Blue button when answer shown
-                              : Colors.grey[300], // Grey when disabled
+                              ? const Color(0xFF3A5998)
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Text(
-                          _questionCount >= _numberOfQuestions
-                              ? "Kết thúc"
-                              : "Tiếp theo",
+                          isLastQuestion ? "Kết thúc" : "Tiếp theo",
                           style: TextStyle(
                             fontSize: 16,
                             color: _showAnswer ? Colors.white : Colors.black54,

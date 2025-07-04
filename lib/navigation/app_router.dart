@@ -293,12 +293,16 @@ class AppRouter {
                           child: const QuizSelectionScreen(),
                         );
 
-                      final score = extra['score'] as int;
-                      final totalQuestions = extra['totalQuestions'] as int;
-                      final quizDuration = extra['quizDuration'] as Duration;
-                      final userAnswers = List<String>.from(
-                          extra['userAnswers'] as List? ?? []);
-                      final quizKey = extra['quizKey'] as String;
+                      final score = extra['score'] as int? ?? 0;
+                      final totalQuestions =
+                          extra['totalQuestions'] as int? ?? 0;
+                      final quizDuration =
+                          extra['quizDuration'] as Duration? ?? Duration.zero;
+                      final userAnswers = (extra['userAnswers'] as List?)
+                              ?.map((e) => e.toString())
+                              .toList() ??
+                          <String>[];
+                      final quizKey = extra['quizKey'] as String?;
                       final questionDetails = extra['questionDetails'];
 
                       return NoTransitionPage(

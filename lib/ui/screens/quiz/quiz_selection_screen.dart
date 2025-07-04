@@ -79,90 +79,44 @@ class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 56),
-          // Header chào mừng với avatar/icon
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.blue.shade100,
-                  child: const Icon(Icons.emoji_events,
-                      color: Colors.orange, size: 36),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Xin chào!',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Sẵn sàng luyện tập và chinh phục tiếng Anh? 🚀',
-                        style: TextStyle(fontSize: 15, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 18),
-          // AppBar cũ giữ lại để có tiêu đề
-          AppBar(
-            automaticallyImplyLeading: true,
+    return ValueListenableBuilder<Map<String, Map<String, dynamic>>>(
+      valueListenable: _quizStateManager.quizResults,
+      builder: (context, quizResults, child) {
+        return Scaffold(
+          appBar: AppBar(
             title: const Text('Chọn bài luyện tập'),
-            elevation: 0,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: _quizStateManager.quizResults,
-              builder: (context, quizResults, child) {
-                return ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    _buildWowQuizTile(
-                      context,
-                      'Tìm từ cho định nghĩa',
-                      subtitle: 'Find the word for the definition',
-                      icon: Icons.search,
-                      iconColor: Colors.purple,
-                      quizKey: vietnameseToEnglishQuizKey,
-                      progress: 0.4, // giả lập tiến độ
+          body: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildWowQuizTile(
+                context,
+                'Tìm từ cho định nghĩa',
+                subtitle: 'Find the word for the definition',
+                icon: Icons.search,
+                iconColor: Colors.purple,
+                quizKey: vietnameseToEnglishQuizKey,
+                progress: 0.4, // giả lập tiến độ
+              ),
+              _buildWowQuizTile(
+                context,
+                'Trắc nghiệm với Các thì',
+                subtitle: 'Tenses Quiz',
+                icon: Icons.access_time,
+                iconColor: Colors.teal,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const QuizTensesSelectionScreen(),
                     ),
-                    _buildWowQuizTile(
-                      context,
-                      'Trắc nghiệm với Các thì',
-                      subtitle: 'Tenses Quiz',
-                      icon: Icons.access_time,
-                      iconColor: Colors.teal,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const QuizTensesSelectionScreen(),
-                          ),
-                        );
-                      },
-                      progress: 0.2, // giả lập tiến độ
-                    ),
-                  ],
-                );
-              },
-            ),
+                  );
+                },
+                progress: 0.2, // giả lập tiến độ
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -176,82 +130,110 @@ class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
     VoidCallback? onTap,
     double progress = 0.0,
   }) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: const Duration(milliseconds: 600),
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: value,
-          child: Transform.translate(
-            offset: Offset(0, (1 - value) * 30),
-            child: child,
-          ),
-        );
-      },
-      child: GestureDetector(
-        onTap: onTap ??
-            () async {
-              if (quizKey != null) {
-                await _handleRetryQuiz(quizKey);
-              }
-            },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [iconColor.withOpacity(0.15), Colors.white],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    final quizStateManager = _quizStateManager;
+    final isCompleted =
+        quizKey != null && quizStateManager.hasQuizResult(quizKey);
+    final colorScheme = Theme.of(context).colorScheme;
+    final quizCardColor = colorScheme.primaryContainer;
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      color: quizCardColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+        child: ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withOpacity(0.13),
+              borderRadius: BorderRadius.circular(12),
             ),
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: iconColor.withOpacity(0.12),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 32,
+            ),
+          ),
+          title: Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(subtitle,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey)),
+              if (isCompleted) const SizedBox(height: 8),
+              if (isCompleted)
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          await quizStateManager.removeQuizResult(quizKey!);
+                          dynamic quizOutcome = await context.push(
+                            RoutePaths.quiz + '/vietnamese_to_english_quiz',
+                          );
+                          if (quizOutcome is Map<String, dynamic>) {
+                            await quizStateManager.setQuizResult(
+                                quizKey, quizOutcome);
+                            setState(() {});
+                          }
+                        },
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: const Text('Làm lại'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final result =
+                              quizStateManager.getQuizResult(quizKey!);
+                          if (result != null) {
+                            await context.push(
+                              RoutePaths.quiz + '/quiz_result',
+                              extra: {
+                                ...result,
+                                'quizKey': quizKey,
+                              },
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.visibility, size: 18),
+                        label: const Text('Xem'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.13),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.all(14),
-                  child: Icon(icon, color: iconColor, size: 32),
-                ),
-                const SizedBox(width: 18),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                const Icon(Icons.chevron_right, size: 30, color: Colors.grey),
-              ],
-            ),
+          trailing: isCompleted ? null : const Icon(Icons.chevron_right),
+          onTap: isCompleted
+              ? null
+              : onTap ??
+                  () async {
+                    dynamic quizOutcome = await context.push(
+                      RoutePaths.quiz + '/vietnamese_to_english_quiz',
+                    );
+                    if (quizOutcome is Map<String, dynamic>) {
+                      await quizStateManager.setQuizResult(
+                          quizKey!, quizOutcome);
+                      setState(() {});
+                    }
+                  },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.grey.shade200),
           ),
         ),
       ),
