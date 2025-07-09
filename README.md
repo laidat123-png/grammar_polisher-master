@@ -113,12 +113,5 @@ Whether you're a student, professional, or language enthusiast, this app is your
 - Download `GoogleService-Info.plist` from Firebase and put it in `ios/Runner/GoogleServices` folder, then rename it to `GoogleService-Info-Development.plist`
 - Do the same for `production` flavor
 
-### Run
-- We have 2 flavors: `development` and `production`
-- Remove `.example` in `.env.example` folder or create your own env file and put it in `.env/` folder, that named `development.json`
-- Run `flutter run --flavor development --dart-define-from-file=.env/development.json` to run the app in development mode
 
-## Contributing
-- Clone the repository
-- See [CONTRIBUTION.md](CONTRIBUTION.md) for more details
 
