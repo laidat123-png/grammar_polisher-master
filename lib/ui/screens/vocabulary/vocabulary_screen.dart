@@ -42,6 +42,64 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
 
+  // Lazy loading state
+  final ScrollController _scrollController = ScrollController();
+  int _currentMax = 10;
+  List<Word> _visibleWords = [];
+  List<Word> _filteredWords = [];
+  bool _isLoadingMore = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+    context
+        .read<VocabularyBloc>()
+        .add(const VocabularyEvent.getAllOxfordWords());
+    _showWordDetails();
+    _listenNotificationsBloc();
+    _scrollController.addListener(_onScroll);
+    // Khởi tạo dữ liệu ban đầu nếu có
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final words = context.read<VocabularyBloc>().state.words;
+      _updateFilteredWords(words);
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoadingMore) {
+      _loadMoreWords();
+    }
+  }
+
+  void _loadMoreWords() {
+    if (_visibleWords.length >= _filteredWords.length) return;
+    setState(() {
+      _isLoadingMore = true;
+      int nextMax = _currentMax + 10;
+      if (nextMax > _filteredWords.length) nextMax = _filteredWords.length;
+      _visibleWords = _filteredWords.sublist(0, nextMax);
+      _currentMax = nextMax;
+      _isLoadingMore = false;
+    });
+  }
+
+  void _updateFilteredWords(List<Word> allWords) {
+    _filteredWords = List<Word>.from(_getFilteredWords(allWords));
+    int initialMax = _filteredWords.length < 10 ? _filteredWords.length : 10;
+    _currentMax = initialMax; // Reset về 10 mỗi lần filter/search thay đổi
+    _visibleWords = _filteredWords.sublist(0, initialMax);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<VocabularyBloc, VocabularyState>(
@@ -61,113 +119,107 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                 right: 16,
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SearchBox(
-                      showSearch: true,
-                      selectedPos: _selectedPos,
-                      selectedLetter: _selectedLetter,
-                      onSelectPos: _onSelectPos,
-                      onSelectLetter: _onSelectLetter,
-                      onClearFilters: _onClearFilters,
-                      onSearch: _onSearch,
-                      onMic: _onMic,
-                      text: _searchText,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildActionButton(
-                            context,
-                            "Từ vựng yêu thích",
-                            Icons.book,
-                            false,
-                            () => context.push(RoutePaths.savedWords),
-                          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SearchBox(
+                    showSearch: true,
+                    selectedPos: _selectedPos,
+                    selectedLetter: _selectedLetter,
+                    onSelectPos: _onSelectPos,
+                    onSelectLetter: _onSelectLetter,
+                    onClearFilters: _onClearFilters,
+                    onSearch: _onSearch,
+                    onMic: _onMic,
+                    text: _searchText,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionButton(
+                          context,
+                          "Từ vựng yêu thích",
+                          Icons.book,
+                          false,
+                          () => context.push(RoutePaths.savedWords),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildActionButton(
-                            context,
-                            "Lịch sử tra cứu",
-                            Icons.history,
-                            false,
-                            () => context.push(RoutePaths.searchHistory),
-                          ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildActionButton(
+                          context,
+                          "Lịch sử tra cứu",
+                          Icons.history,
+                          false,
+                          () => context.push(RoutePaths.searchHistory),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Builder(
-                      builder: (context) {
-                        final words = _getFilteredWords(state.words);
-                        return words.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Không tìm thấy từ nào. Thám tử đang giúp bạn tìm kiếm từ vựng!',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[700],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    Image.asset(
-                                      'assets/images/detective2.png',
-                                      width: 200,
-                                      height: 200,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: _filteredWords.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Không tìm thấy từ nào. Thám tử đang giúp bạn tìm kiếm từ vựng!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[700],
+                                  ),
                                 ),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: words.length,
-                                itemBuilder: (context, index) {
-                                  final word = words[index];
-                                  return Column(
-                                    children: [
-                                      VocabularyItem(word: word),
-                                      if (index == 1) ...[
-                                        BannerAdWidget(
-                                          paddingHorizontal: 16,
-                                          paddingVertical: 8,
-                                        ),
-                                      ]
-                                    ],
-                                  );
-                                },
-                              );
-                      },
-                    ),
-                  ],
-                ),
+                                const SizedBox(height: 24),
+                                Image.asset(
+                                  'assets/images/detective2.png',
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: _scrollController,
+                            itemCount: _visibleWords.length +
+                                (_visibleWords.length < _filteredWords.length
+                                    ? 1
+                                    : 0),
+                            itemBuilder: (context, index) {
+                              if (index < _visibleWords.length) {
+                                final word = _visibleWords[index];
+                                return Column(
+                                  children: [
+                                    VocabularyItem(word: word),
+                                    if (index == 1) ...[
+                                      BannerAdWidget(
+                                        paddingHorizontal: 16,
+                                        paddingVertical: 8,
+                                      ),
+                                    ]
+                                  ],
+                                );
+                              } else {
+                                // Hiện loading indicator khi đang tải thêm
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                );
+                              }
+                            },
+                          ),
+                  ),
+                ],
               ),
             ),
           ),
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _speech = stt.SpeechToText();
-    // Đảm bảo tải dữ liệu từ vựng khi màn hình khởi tạo
-    context
-        .read<VocabularyBloc>()
-        .add(const VocabularyEvent.getAllOxfordWords());
-    _showWordDetails();
-    _listenNotificationsBloc();
   }
 
   void _onSelectPos(WordPos pos) {
@@ -179,7 +231,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       } else {
         _selectedPos.add(pos);
       }
+      final words = context.read<VocabularyBloc>().state.words;
+      _updateFilteredWords(words);
     });
+    _scrollController.jumpTo(0); // Reset scroll về đầu
   }
 
   void _onSelectLetter(String? letter) {
@@ -187,7 +242,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       _displayMode = DisplayMode.allWords;
       _showSearch = true;
       _selectedLetter = letter;
+      final words = context.read<VocabularyBloc>().state.words;
+      _updateFilteredWords(words);
     });
+    _scrollController.jumpTo(0); // Reset scroll về đầu
   }
 
   void _onClearFilters() {
@@ -196,14 +254,20 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       _selectedLetter = null;
       _searchText = '';
       _displayMode = DisplayMode.allWords;
+      final words = context.read<VocabularyBloc>().state.words;
+      _updateFilteredWords(words);
     });
+    _scrollController.jumpTo(0); // Reset scroll về đầu
   }
 
   void _onSearch(String text) {
     setState(() {
       _searchText = text;
       _displayMode = DisplayMode.allWords;
+      final words = context.read<VocabularyBloc>().state.words;
+      _updateFilteredWords(words);
     });
+    _scrollController.jumpTo(0); // Reset scroll về đầu
   }
 
   void _onMic() async {
@@ -255,14 +319,14 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     if (_displayMode == DisplayMode.savedWords) {
       return words.where((word) => word.userDefinition == 'favorite').toList();
     } else if (_displayMode == DisplayMode.searchHistory) {
-      return [];
+      return <Word>[];
     }
 
     // Nếu không có bộ lọc nào được áp dụng và không có văn bản tìm kiếm, trả về danh sách trống
     if (_searchText.isEmpty &&
         _selectedPos.isEmpty &&
         _selectedLetter == null) {
-      return [];
+      return <Word>[];
     }
 
     // Lọc từ theo các tiêu chí
