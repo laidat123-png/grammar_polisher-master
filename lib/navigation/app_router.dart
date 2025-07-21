@@ -42,6 +42,7 @@ import '../ui/screens/quiz/future_continuous_quiz_screen.dart';
 import '../ui/screens/quiz/future_perfect_quiz_screen.dart';
 import '../ui/screens/quiz/future_perfect_continuous_quiz_screen.dart';
 import '../ui/screens/quiz/near_future_quiz_screen.dart';
+import '../ui/screens/terms_of_use/terms_of_use_screen.dart';
 
 part 'route_paths.dart';
 
@@ -378,6 +379,15 @@ class AppRouter {
             return NoTransitionPage(
               key: state.pageKey,
               child: const OnboardingScreen(),
+            );
+          },
+        ),
+        GoRoute(
+          path: RoutePaths.termsOfUse,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const TermsOfUseScreen(),
             );
           },
         ),

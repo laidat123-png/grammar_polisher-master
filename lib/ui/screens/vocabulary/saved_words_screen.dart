@@ -7,6 +7,7 @@ import '../../commons/base_page.dart';
 import './bloc/vocabulary_bloc.dart';
 import './widgets/vocabulary_item.dart';
 import 'word_details_screen.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class SavedWordsScreen extends StatefulWidget {
   const SavedWordsScreen({super.key});
@@ -187,11 +188,11 @@ class _SavedWordsScreenState extends State<SavedWordsScreen> {
                               ),
                               const SizedBox(height: 24),
                               Image.asset(
-                                'assets/images/detective2.png',
+                                'assets/images/b721d352-54cc-40dc-949c-7382f9bee707.gif',
                                 width: 180,
                                 height: 180,
                                 fit: BoxFit.contain,
-                              ),
+                              ).animate().fadeIn(duration: 600.ms)
                             ],
                           ),
                         ),

@@ -84,7 +84,19 @@ class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
       builder: (context, quizResults, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Chọn bài luyện tập'),
+            title: const Text(
+              'Chọn bài luyện tập',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF466A92),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            centerTitle: true,
+            iconTheme: const IconThemeData(color: Color(0xFF466A92)),
+            backgroundColor: Colors.white,
+            elevation: 0,
           ),
           body: ListView(
             padding: const EdgeInsets.all(16.0),

@@ -36,4 +36,5 @@ class RoutePaths {
   static const String futurePerfectContinuousQuiz =
       '/future_perfect_continuous_quiz';
   static const String nearFutureQuiz = '/near_future_quiz';
+  static const String termsOfUse = '/terms_of_use';
 }

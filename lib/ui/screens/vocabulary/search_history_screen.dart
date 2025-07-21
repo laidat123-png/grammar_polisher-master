@@ -86,7 +86,7 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
                       ),
                       const SizedBox(height: 24),
                       Image.asset(
-                        'assets/images/detective2.png',
+                        'assets/images/b721d352-54cc-40dc-949c-7382f9bee707.gif',
                         width: 180,
                         height: 180,
                         fit: BoxFit.contain,

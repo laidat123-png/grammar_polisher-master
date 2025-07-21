@@ -426,6 +426,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: 16),
 
+                // Điều khoản chính sách
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  color: colorScheme.primaryContainer,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      context.push('/terms_of_use');
+                    },
+                    child: ListTile(
+                      leading:
+                          Icon(Icons.privacy_tip, color: colorScheme.primary),
+                      title: Text(
+                        "Điều khoản chính sách",
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle:
+                          Text("Xem chi tiết điều khoản & chính sách bảo mật"),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
                 // Hủy tài khoản
                 Card(
                   shape: RoundedRectangleBorder(
