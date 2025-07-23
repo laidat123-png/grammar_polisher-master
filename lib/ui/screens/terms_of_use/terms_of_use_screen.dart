@@ -195,16 +195,6 @@ class TermsOfUseScreen extends StatelessWidget {
                                 color: Colors.redAccent,
                                 fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(
-                            text: ' hoặc số điện thoại: ',
-                            style: textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text: '0703 369 307.',
-                            style: textTheme.bodyLarge?.copyWith(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold),
-                          ),
                         ],
                       ),
                     ),

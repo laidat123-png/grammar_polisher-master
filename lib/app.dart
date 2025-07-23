@@ -58,7 +58,7 @@ class _AppState extends State<App> {
               : 0;
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            routerConfig: AppRouter.getRouter(widget.initialLocation),
+            routerConfig: AppRouter.getAppRouter(widget.initialLocation),
             theme: ThemeData.from(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: SettingsScreen.seeks[colorIndex],

@@ -159,58 +159,68 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                   const SizedBox(height: 8),
                   Expanded(
                     child: _filteredWords.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Không tìm thấy từ nào. Thám tử đang giúp bạn tìm kiếm từ vựng!',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[700],
-                                  ),
+                        ? SingleChildScrollView(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Không tìm thấy từ nào. Thám tử đang giúp bạn tìm kiếm từ vựng!',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Image.asset(
+                                      'assets/images/detective2.png',
+                                      width: 200,
+                                      height: 200,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 24),
-                                Image.asset(
-                                  'assets/images/detective2.png',
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.contain,
-                                ),
-                              ],
+                              ),
                             ),
                           )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            itemCount: _visibleWords.length +
-                                (_visibleWords.length < _filteredWords.length
-                                    ? 1
-                                    : 0),
-                            itemBuilder: (context, index) {
-                              if (index < _visibleWords.length) {
-                                final word = _visibleWords[index];
-                                return Column(
-                                  children: [
-                                    VocabularyItem(word: word),
-                                    if (index == 1) ...[
-                                      BannerAdWidget(
-                                        paddingHorizontal: 16,
-                                        paddingVertical: 8,
-                                      ),
-                                    ]
-                                  ],
-                                );
-                              } else {
-                                // Hiện loading indicator khi đang tải thêm
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                );
-                              }
-                            },
+                        : Flexible(
+                            fit: FlexFit.loose,
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemCount: _visibleWords.length +
+                                  (_visibleWords.length < _filteredWords.length
+                                      ? 1
+                                      : 0),
+                              itemBuilder: (context, index) {
+                                if (index < _visibleWords.length) {
+                                  final word = _visibleWords[index];
+                                  return Column(
+                                    children: [
+                                      VocabularyItem(word: word),
+                                      if (index == 1) ...[
+                                        BannerAdWidget(
+                                          paddingHorizontal: 16,
+                                          paddingVertical: 8,
+                                        ),
+                                      ]
+                                    ],
+                                  );
+                                } else {
+                                  // Hiện loading indicator khi đang tải thêm
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                   ),
                 ],

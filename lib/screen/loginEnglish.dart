@@ -315,7 +315,7 @@ class _LoginEnglishState extends State<LoginEnglish>
                       children: [
                         Expanded(
                           child: _SocialButton(
-                            asset: 'assets/images/google_logo.png',
+                            asset: 'assets/images/gg.png',
                             label: 'Google',
                             onTap: () {},
                           ),

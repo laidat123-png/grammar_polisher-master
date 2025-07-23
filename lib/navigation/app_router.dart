@@ -50,8 +50,9 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
+  static GoRouter? _router;
   static GoRouter getRouter(String initialLocation) {
-    return GoRouter(
+    _router ??= GoRouter(
       initialLocation: initialLocation,
       navigatorKey: rootNavigatorKey,
       redirect: (context, state) {
@@ -393,5 +394,11 @@ class AppRouter {
         ),
       ],
     );
+    return _router!;
+  }
+
+  static GoRouter getAppRouter(String initialLocation) {
+    _router ??= AppRouter.getRouter(initialLocation);
+    return _router!;
   }
 }

@@ -507,7 +507,7 @@ class _RegisterEnglishState extends State<RegisterEnglish>
                           ),
                         ),
                         icon: Image.asset(
-                          'assets/images/google_logo.png',
+                          'assets/images/gg.png',
                           height: 24,
                           width: 24,
                           fit: BoxFit.contain,

@@ -178,7 +178,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
                       backgroundImage:
                           avatarUrl != null ? NetworkImage(avatarUrl!) : null,
                       child: avatarUrl == null
-                          ? Icon(Icons.person, color: selectedColor, size: 18)
+                          ? Icon(Icons.settings, color: selectedColor, size: 18)
                           : null,
                     );
                   } else {

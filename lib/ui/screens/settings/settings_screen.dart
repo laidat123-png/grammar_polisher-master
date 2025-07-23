@@ -398,34 +398,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: 16),
 
-                // Liên hệ
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                  color: colorScheme.primaryContainer,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: _openContactPhone,
-                    child: ListTile(
-                      leading: Icon(Icons.phone, color: colorScheme.primary),
-                      title: Text(
-                        "Liên hệ",
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text("Hỗ trợ khách hàng 24/7"),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
                 // Điều khoản chính sách
                 Card(
                   shape: RoundedRectangleBorder(
@@ -672,31 +644,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _isSelectingTheme = false;
     });
-    // Điều hướng lại đúng tab đang chọn sau khi đổi theme
-    Future.delayed(const Duration(milliseconds: 100), () {
-      context.go(HomeNavigation.routes[globalTabIndex]);
-    });
+    // Đảm bảo giữ nguyên tab Cài Đặt sau khi đổi theme
+    globalTabIndex = 4;
   }
 
   void _onChangeColor(BuildContext context, int colorIndex) {
     context
         .read<SettingsBloc>()
         .add(SettingsEvent.saveSettings(seek: colorIndex));
-    // Điều hướng lại đúng tab đang chọn sau khi đổi màu sắc
-    Future.delayed(const Duration(milliseconds: 100), () {
-      context.go(HomeNavigation.routes[globalTabIndex]);
-    });
-  }
-
-  Future<void> _openContactPhone() async {
-    final url = Uri.parse('tel:0703369307');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Không thể mở ứng dụng gọi điện.')),
-      );
-    }
+    // Đảm bảo giữ nguyên tab Cài Đặt sau khi đổi màu sắc
+    globalTabIndex = 4;
   }
 
   void _openNotificationsSettings() {
