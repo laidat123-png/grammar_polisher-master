@@ -8,9 +8,18 @@ import 'bloc/settings_bloc.dart';
 import 'edit_account_screen.dart';
 
 const List<String> kAvatarOptions = [
-  'assets/images/Audi.png',
-  'assets/images/Bentley.png',
-  'assets/images/BMW.png',
+  'assets/images/tuoiti.png',
+  'assets/images/tuoisuu.png',
+  'assets/images/tuoidan.png',
+  'assets/images/tuoimeo.png',
+  'assets/images/tuoithin.png',
+  'assets/images/tuoity.png',
+  'assets/images/tuoingo.png',
+  'assets/images/tuoimui.png',
+  'assets/images/tuoithan.png',
+  'assets/images/tuoidau.png',
+  'assets/images/tuoituat.png',
+  'assets/images/tuoihoi.png',
 ];
 
 class AccountDetailsScreen extends StatefulWidget {

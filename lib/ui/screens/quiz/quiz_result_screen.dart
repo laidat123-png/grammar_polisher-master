@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:grammar_polisher/navigation/app_router.dart';
 import 'package:grammar_polisher/data/quiz_data.dart';
 import 'package:grammar_polisher/data/repositories/oxford_words_repository.dart';
 import 'package:grammar_polisher/data/data_sources/assets_data.dart';
 import 'package:grammar_polisher/data/data_sources/local_data.dart';
 import 'package:grammar_polisher/configs/hive/app_hive.dart';
 import 'package:grammar_polisher/data/models/word.dart';
+import 'package:grammar_polisher/services/quiz_result_service.dart';
 
-class QuizResultScreen extends StatelessWidget {
+class QuizResultScreen extends StatefulWidget {
   final int score;
   final int totalQuestions;
   final Duration quizDuration;
@@ -27,46 +27,150 @@ class QuizResultScreen extends StatelessWidget {
   });
 
   @override
+  State<QuizResultScreen> createState() => _QuizResultScreenState();
+}
+
+class _QuizResultScreenState extends State<QuizResultScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _saveQuizResult();
+  }
+
+  /// Save quiz result to Firestore
+  Future<void> _saveQuizResult() async {
+    if (widget.quizKey == null) return;
+
+    try {
+      final String quizType = _getQuizTypeFromKey(widget.quizKey!);
+
+      await QuizResultService.saveQuizResult(
+        quizType: quizType,
+        quizKey: widget.quizKey!,
+        score: widget.score,
+        totalQuestions: widget.totalQuestions,
+        quizDuration: widget.quizDuration,
+        userAnswers: widget.userAnswers,
+        questionDetails: widget.questionDetails,
+      );
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Kết quả đã được lưu thành công!'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error saving quiz result: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Lỗi khi lưu kết quả: ${e.toString()}'),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Convert quiz key to readable quiz type
+  String _getQuizTypeFromKey(String quizKey) {
+    switch (quizKey) {
+      case 'simple_present_quiz':
+        return 'Simple Present';
+      case 'present_continuous_quiz':
+        return 'Present Continuous';
+      case 'present_perfect_quiz':
+        return 'Present Perfect';
+      case 'present_perfect_continuous_quiz':
+        return 'Present Perfect Continuous';
+      case 'past_simple_quiz':
+        return 'Simple Past';
+      case 'past_continuous_quiz':
+        return 'Past Continuous';
+      case 'past_perfect_quiz':
+        return 'Past Perfect';
+      case 'past_perfect_continuous_quiz':
+        return 'Past Perfect Continuous';
+      case 'future_simple_quiz':
+        return 'Simple Future';
+      case 'future_continuous_quiz':
+        return 'Future Continuous';
+      case 'future_perfect_quiz':
+        return 'Future Perfect';
+      case 'future_perfect_continuous_quiz':
+        return 'Future Perfect Continuous';
+      case 'near_future_quiz':
+        return 'Near Future';
+      case 'vietnamese_to_english_quiz':
+        return 'Vietnamese to English';
+      default:
+        return 'Unknown Quiz';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final String formattedDuration =
-        '${quizDuration.inMinutes} phút ${quizDuration.inSeconds.remainder(60)} giây';
-    final List<QuizQuestion> questions = quizKey == 'past_simple_quiz'
+        '${widget.quizDuration.inMinutes} phút ${widget.quizDuration.inSeconds.remainder(60)} giây';
+    final List<QuizQuestion> questions = widget.quizKey == 'past_simple_quiz'
         ? pastSimpleQuestions
-        : quizKey == 'simple_present_quiz'
+        : widget.quizKey == 'simple_present_quiz'
             ? simplePresentQuestions
-            : quizKey == 'present_continuous_quiz'
+            : widget.quizKey == 'present_continuous_quiz'
                 ? presentContinuousQuestions
-                : quizKey == 'present_perfect_quiz'
+                : widget.quizKey == 'present_perfect_quiz'
                     ? presentPerfectQuestions
-                    : quizKey == 'present_perfect_continuous_quiz'
+                    : widget.quizKey == 'present_perfect_continuous_quiz'
                         ? presentPerfectContinuousQuestions
-                        : quizKey == 'past_continuous_quiz'
+                        : widget.quizKey == 'past_continuous_quiz'
                             ? pastContinuousQuestions
-                            : quizKey == 'past_perfect_quiz'
+                            : widget.quizKey == 'past_perfect_quiz'
                                 ? pastPerfectQuestions
-                                : quizKey == 'past_perfect_continuous_quiz'
+                                : widget.quizKey ==
+                                        'past_perfect_continuous_quiz'
                                     ? pastPerfectContinuousQuestions
-                                    : quizKey == 'future_simple_quiz'
+                                    : widget.quizKey == 'future_simple_quiz'
                                         ? futureSimpleQuestions
-                                        : quizKey == 'future_continuous_quiz'
+                                        : widget.quizKey ==
+                                                'future_continuous_quiz'
                                             ? futureContinuousQuestions
-                                            : quizKey == 'future_perfect_quiz'
+                                            : widget.quizKey ==
+                                                    'future_perfect_quiz'
                                                 ? futurePerfectQuestions
-                                                : quizKey ==
+                                                : widget.quizKey ==
                                                         'future_perfect_continuous_quiz'
                                                     ? futurePerfectContinuousQuestions
-                                                    : quizKey ==
+                                                    : widget.quizKey ==
                                                             'near_future_quiz'
                                                         ? nearFutureQuestions
                                                         : [];
 
-    final bool isVietnameseToEnglish = quizKey == 'vietnamese_to_english_quiz';
+    final bool isVietnameseToEnglish =
+        widget.quizKey == 'vietnamese_to_english_quiz';
 
     List<Widget> resultWidgets = [];
     if (isVietnameseToEnglish &&
-        userAnswers != null &&
-        (quizKey == 'vietnamese_to_english_quiz')) {
-      final List<Map<String, dynamic>>? details = questionDetails ??
+        widget.userAnswers != null &&
+        (widget.quizKey == 'vietnamese_to_english_quiz')) {
+      final List<Map<String, dynamic>>? details = widget.questionDetails ??
           (() {
             final Map<String, dynamic>? extra = ModalRoute.of(context)
                 ?.settings
@@ -85,7 +189,6 @@ class QuizResultScreen extends StatelessWidget {
           final List options = q['options'] ?? [];
           final String correctAnswer = q['correctAnswer'] ?? '';
           final String userAnswer = q['userAnswer'] ?? '';
-          final bool isCorrect = userAnswer == correctAnswer;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: Padding(
@@ -145,8 +248,8 @@ class QuizResultScreen extends StatelessWidget {
           localData: HiveDatabase(appHive: AppHive()),
         );
         final allWords = oxfordWordsRepository.getAllOxfordWords();
-        resultWidgets.addAll(List.generate(userAnswers!.length, (index) {
-          final String userWord = userAnswers![index];
+        resultWidgets.addAll(List.generate(widget.userAnswers!.length, (index) {
+          final String userWord = widget.userAnswers![index];
           String vietnameseDefinition = 'Không có dữ liệu đề';
           final found = allWords.firstWhere(
             (w) => w.word == userWord,
@@ -181,9 +284,10 @@ class QuizResultScreen extends StatelessWidget {
     } else {
       resultWidgets.addAll(List.generate(questions.length, (index) {
         final q = questions[index];
-        final userAnswer = userAnswers != null && userAnswers!.length > index
-            ? userAnswers![index]
-            : null;
+        final userAnswer =
+            widget.userAnswers != null && widget.userAnswers!.length > index
+                ? widget.userAnswers![index]
+                : null;
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 10),
           child: Padding(
@@ -254,7 +358,7 @@ class QuizResultScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Bạn đã đạt $score / $totalQuestions điểm',
+                          'Bạn đã đạt ${widget.score} / ${widget.totalQuestions} điểm',
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),

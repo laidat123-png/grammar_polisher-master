@@ -13,6 +13,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:grammar_polisher/services/auth_service.dart';
 
 import 'app.dart';
 import 'configs/di.dart';
@@ -58,6 +60,9 @@ void main() async {
   });
   await DI().sl<OxfordWordsRepository>().initData();
 
+  // Initialize auth state listener
+  AuthService.initAuthStateListener();
+
   debugPrint('setAnalyticsCollectionEnabled true');
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   FirebaseAnalytics.instance.setConsent(
@@ -79,10 +84,24 @@ void main() async {
   // Kiểm tra trạng thái đăng nhập và onboarding
   final prefs = await SharedPreferences.getInstance();
   final isShowOnboarding = prefs.getBool('isShowOnboarding') ?? false;
-  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  // Kiểm tra cả SharedPreferences và Firebase Auth state
+  final isLoggedInPrefs = prefs.getBool('isLoggedIn') ?? false;
+  final isLoggedInFirebase = FirebaseAuth.instance.currentUser != null;
+
+  // Chỉ coi là đăng nhập nếu CẢ HAI điều kiện đều true
+  final isActuallyLoggedIn = isLoggedInPrefs && isLoggedInFirebase;
+
+  // Nếu SharedPreferences nói là đăng nhập nhưng Firebase Auth không có user, clear SharedPreferences
+  if (isLoggedInPrefs && !isLoggedInFirebase) {
+    await prefs.setBool('isLoggedIn', false);
+    await prefs.remove('isLoggedIn');
+    print('Cleared stale login status from SharedPreferences');
+  }
+
   final initialLocation = !isShowOnboarding
       ? '/onboarding'
-      : (isLoggedIn ? '/vocabulary' : '/login');
+      : (isActuallyLoggedIn ? '/vocabulary' : '/login');
 
   runApp(
     MultiBlocProvider(

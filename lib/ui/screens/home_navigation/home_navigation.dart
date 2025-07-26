@@ -64,7 +64,9 @@ class _HomeNavigationState extends State<HomeNavigation> {
     final colorScheme = Theme.of(context).colorScheme;
 
     final currentRoute = GoRouter.of(context).currentRoute;
-    var selectedIndex = globalTabIndex;
+    // Đồng bộ selectedIndex với currentIndex của shell
+    var selectedIndex = widget.child.currentIndex;
+    globalTabIndex = selectedIndex; // Cập nhật globalTabIndex để đồng bộ
     final selectedColor = colorScheme.primary;
     final unselectedColor = Colors.grey[600]!;
 
@@ -89,8 +91,9 @@ class _HomeNavigationState extends State<HomeNavigation> {
                     widget.child.shellRouteContext.routerState.uri.path)
             ? StreakButton(
                 onPressed: () {
-                  widget.child.goBranch(
-                      HomeNavigation.routes.indexOf(RoutePaths.streak));
+                  final streakIndex = HomeNavigation.routes.indexOf(RoutePaths.streak);
+                  globalTabIndex = streakIndex;
+                  widget.child.goBranch(streakIndex);
                 },
               )
             : null,

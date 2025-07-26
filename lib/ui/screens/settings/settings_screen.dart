@@ -9,6 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
+import 'package:grammar_polisher/services/quiz_sync_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:grammar_polisher/services/auth_service.dart';
 
 import '../../../constants/words.dart';
 import '../../../data/models/word_status.dart';
@@ -50,9 +53,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static const int _duration = 7000;
 
   static const List<String> kAvatarOptions = [
-    'assets/images/Audi.png',
-    'assets/images/Bentley.png',
-    'assets/images/BMW.png',
+    'assets/images/tuoiti.png',
+    'assets/images/tuoisuu.png',
+    'assets/images/tuoidan.png',
+    'assets/images/tuoimeo.png',
+    'assets/images/tuoithin.png',
+    'assets/images/tuoity.png',
+    'assets/images/tuoingo.png',
+    'assets/images/tuoimui.png',
+    'assets/images/tuoithan.png',
+    'assets/images/tuoidau.png',
+    'assets/images/tuoituat.png',
+    'assets/images/tuoihoi.png',
   ];
 
   String? userName;
@@ -604,9 +616,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () async {
-                      await FirebaseAuth.instance.signOut();
-                      if (context.mounted) {
-                        context.go('/login');
+                      // Use AuthService to properly sign out
+                      try {
+                        await AuthService.signOut();
+                        print('User signed out successfully via AuthService');
+
+                        if (context.mounted) {
+                          context.go('/login');
+                        }
+                      } catch (e) {
+                        print('Error during sign out: $e');
+
+                        // Fallback: still try to navigate to login even if there's an error
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Lỗi khi đăng xuất: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          context.go('/login');
+                        }
                       }
                     },
                     child: ListTile(

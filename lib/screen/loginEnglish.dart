@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grammar_polisher/services/quiz_sync_service.dart';
+import 'package:grammar_polisher/services/auth_service.dart';
 
 class LoginEnglish extends StatefulWidget {
   const LoginEnglish({Key? key}) : super(key: key);
@@ -75,10 +77,12 @@ class _LoginEnglishState extends State<LoginEnglish>
       _isLoading = true;
     });
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      // Use AuthService instead of direct Firebase Auth
+      await AuthService.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -88,9 +92,7 @@ class _LoginEnglishState extends State<LoginEnglish>
       setState(() {
         _loginSuccess = false;
       });
-      // Lưu trạng thái đăng nhập
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
+
       if (mounted) {
         context.go(RoutePaths.vocabulary);
       }
@@ -132,16 +134,9 @@ class _LoginEnglishState extends State<LoginEnglish>
     });
 
     try {
-      // Create a GoogleAuthProvider
-      final GoogleAuthProvider googleProvider = GoogleAuthProvider();
-
-      // Add scopes if needed
-      googleProvider.addScope('email');
-      googleProvider.addScope('profile');
-
-      // Sign in with Google using Firebase Auth
+      // Use AuthService instead of direct Firebase Auth
       final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithProvider(googleProvider);
+          await AuthService.signInWithGoogle();
       final User? user = userCredential.user;
 
       if (user != null) {
@@ -155,7 +150,7 @@ class _LoginEnglishState extends State<LoginEnglish>
             'name': user.displayName ?? '',
             'phone': '',
             'date_of_birth': '',
-            'avatar': 'assets/images/Audi.png',
+            'avatar': 'assets/images/tuoiti.png',
             'created_at': FieldValue.serverTimestamp(),
             'login_method': 'google',
           });
@@ -170,9 +165,6 @@ class _LoginEnglishState extends State<LoginEnglish>
         setState(() {
           _loginSuccess = false;
         });
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
 
         if (mounted) {
           context.go(RoutePaths.vocabulary);

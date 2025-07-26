@@ -27,6 +27,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   bool _shakeConfirm = false;
   String? _userName;
   bool _showSuccessText = false;
+  bool _isGoogleUser = false;
 
   @override
   void dispose() {
@@ -53,12 +54,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   void _fetchUserName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    // Check if user signed in with Google
+    final isGoogleSignIn = user.providerData
+        .any((provider) => provider.providerId == 'google.com');
+
     final doc = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .get();
     final data = doc.data();
     setState(() {
+      _isGoogleUser = isGoogleSignIn;
       _userName = data != null &&
               data['name'] != null &&
               data['name'].toString().trim().isNotEmpty
@@ -114,7 +121,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return BasePage(
-      title: 'Thay đổi mật khẩu',
+      title: _isGoogleUser ? 'Tạo mật khẩu' : 'Thay đổi mật khẩu',
       child: FadeTransition(
         opacity: _animController,
         child: SlideTransition(
@@ -150,9 +157,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              _userName != null
-                                  ? '$_userName ơi, hãy tạo mật khẩu mạnh với ít nhất 8 ký tự để bảo vệ tài khoản nhé!'
-                                  : 'Để bảo mật tài khoản, vui lòng tạo mật khẩu mạnh với ít nhất 8 ký tự',
+                              _isGoogleUser
+                                  ? (_userName != null
+                                      ? '$_userName ơi, hãy tạo mật khẩu cho tài khoản để tăng cường bảo mật nhé!'
+                                      : 'Tạo mật khẩu cho tài khoản Google của bạn với ít nhất 8 ký tự')
+                                  : (_userName != null
+                                      ? '$_userName ơi, hãy tạo mật khẩu mạnh với ít nhất 8 ký tự để bảo vệ tài khoản nhé!'
+                                      : 'Để bảo mật tài khoản, vui lòng tạo mật khẩu mạnh với ít nhất 8 ký tự'),
                               style: const TextStyle(
                                   fontSize: 14, color: Colors.black87),
                             ),
@@ -161,26 +172,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Current password
-                    const Text('Mật khẩu hiện tại',
-                        style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _currentPasswordController,
-                      obscureText: _obscureCurrentPassword,
-                      decoration: InputDecoration(
-                        hintText: 'Nhập mật khẩu hiện tại',
-                        suffixIcon: IconButton(
-                          icon: Icon(_obscureCurrentPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility),
-                          onPressed: () => setState(() =>
-                              _obscureCurrentPassword =
-                                  !_obscureCurrentPassword),
+                    // Current password - only show for non-Google users
+                    if (!_isGoogleUser) ...[
+                      const Text('Mật khẩu hiện tại',
+                          style: TextStyle(fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _currentPasswordController,
+                        obscureText: _obscureCurrentPassword,
+                        decoration: InputDecoration(
+                          hintText: 'Nhập mật khẩu hiện tại',
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscureCurrentPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            onPressed: () => setState(() =>
+                                _obscureCurrentPassword =
+                                    !_obscureCurrentPassword),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                    ],
                     // New password
                     const Text('Mật khẩu mới',
                         style: TextStyle(fontWeight: FontWeight.w500)),
@@ -346,8 +359,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   }
 
   void _changePassword() async {
-    // Validate inputs
-    if (_currentPasswordController.text.isEmpty ||
+    // Validate inputs - skip current password validation for Google users
+    if ((!_isGoogleUser && _currentPasswordController.text.isEmpty) ||
         _newPasswordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       _showErrorSnackBar('Vui lòng điền đầy đủ thông tin');
@@ -373,12 +386,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     try {
       // Ẩn bàn phím
       FocusScope.of(context).unfocus();
-      // Re-authenticate
-      final cred = EmailAuthProvider.credential(
-        email: user.email!,
-        password: _currentPasswordController.text.trim(),
-      );
-      await user.reauthenticateWithCredential(cred);
+
+      if (!_isGoogleUser) {
+        // For email/password users - re-authenticate with current password
+        final cred = EmailAuthProvider.credential(
+          email: user.email!,
+          password: _currentPasswordController.text.trim(),
+        );
+        await user.reauthenticateWithCredential(cred);
+      }
+      // For Google users, they can directly set a new password without re-authentication
+
       // Change password
       await user.updatePassword(_newPasswordController.text.trim());
       if (mounted) {
@@ -388,7 +406,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),
-                Text('Đổi mật khẩu thành công'),
+                Text(_isGoogleUser
+                    ? 'Tạo mật khẩu thành công'
+                    : 'Đổi mật khẩu thành công'),
               ],
             ),
             backgroundColor: Colors.green,
@@ -402,7 +422,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
         }
       }
     } on FirebaseAuthException catch (e) {
-      String message = 'Đổi mật khẩu thất bại';
+      String message =
+          _isGoogleUser ? 'Tạo mật khẩu thất bại' : 'Đổi mật khẩu thất bại';
       if (e.code == 'wrong-password') {
         message = 'Mật khẩu hiện tại không đúng';
       } else if (e.code == 'weak-password') {

@@ -4,6 +4,8 @@ import 'package:grammar_polisher/navigation/app_router.dart';
 import 'package:grammar_polisher/ui/screens/quiz/quiz_result_screen.dart'; // For displaying results
 import 'package:grammar_polisher/utils/quiz_state_manager.dart'; // Import QuizStateManager
 import 'package:grammar_polisher/ui/screens/quiz/quiz_tenses_selection_screen.dart';
+import 'package:grammar_polisher/services/quiz_sync_service.dart'; // Import QuizSyncService
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QuizSelectionScreen extends StatefulWidget {
   const QuizSelectionScreen({super.key});
@@ -14,6 +16,7 @@ class QuizSelectionScreen extends StatefulWidget {
 
 class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
   final _quizStateManager = QuizStateManager();
+  bool _isSyncing = false;
 
   final String simplePresentQuizKey = 'simple_present_quiz';
   final String vietnameseToEnglishQuizKey = 'vietnamese_to_english_quiz';
@@ -26,6 +29,87 @@ class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
 
   Future<void> _initQuizState() async {
     await _quizStateManager.init();
+    _syncQuizResults();
+  }
+
+  /// Sync quiz results from Firestore when screen loads
+  Future<void> _syncQuizResults() async {
+    if (_isSyncing) return;
+
+    setState(() {
+      _isSyncing = true;
+    });
+
+    try {
+      // Check if user is logged in and has Firestore data
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        print('Syncing quiz results for user: ${user.email}');
+        await QuizSyncService.syncQuizResultsFromFirestore();
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Đã đồng bộ dữ liệu từ đám mây'),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+
+        // Refresh UI after sync
+        if (mounted) {
+          setState(() {});
+        }
+      } else {
+        // User not logged in
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.info, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Vui lòng đăng nhập để đồng bộ dữ liệu'),
+                ],
+              ),
+              backgroundColor: Colors.orange,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error during quiz sync: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
+                Text('Lỗi khi đồng bộ: ${e.toString()}'),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSyncing = false;
+        });
+      }
+    }
   }
 
   // Đưa hàm _handleRetryQuiz ra ngoài để dùng chung
@@ -97,6 +181,23 @@ class _QuizSelectionScreenState extends State<QuizSelectionScreen> {
             iconTheme: const IconThemeData(color: Color(0xFF466A92)),
             backgroundColor: Colors.white,
             elevation: 0,
+            actions: [
+              if (_isSyncing)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _syncQuizResults,
+                  tooltip: 'Đồng bộ dữ liệu từ đám mây',
+                ),
+            ],
           ),
           body: ListView(
             padding: const EdgeInsets.all(16.0),

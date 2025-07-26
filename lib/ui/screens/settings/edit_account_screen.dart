@@ -3,9 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 const List<String> kAvatarOptions = [
-  'assets/images/Audi.png',
-  'assets/images/Bentley.png',
-  'assets/images/BMW.png',
+  'assets/images/tuoiti.png',
+  'assets/images/tuoisuu.png',
+  'assets/images/tuoidan.png',
+  'assets/images/tuoimeo.png',
+  'assets/images/tuoithin.png',
+  'assets/images/tuoity.png',
+  'assets/images/tuoingo.png',
+  'assets/images/tuoimui.png',
+  'assets/images/tuoithan.png',
+  'assets/images/tuoidau.png',
+  'assets/images/tuoituat.png',
+  'assets/images/tuoihoi.png',
 ];
 
 class EditAccountScreen extends StatefulWidget {
@@ -235,18 +244,23 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Chọn avatar'),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: kAvatarOptions.map((path) {
-              return GestureDetector(
-                onTap: () => Navigator.of(context).pop(path),
-                child: CircleAvatar(
-                  radius: 36,
-                  backgroundImage: AssetImage(path),
-                  backgroundColor: Colors.grey[400],
-                ),
-              );
-            }).toList(),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: kAvatarOptions.map((path) {
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).pop(path),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage(path),
+                    backgroundColor: Colors.grey[400],
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         );
       },
@@ -280,15 +294,40 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               const SizedBox(height: 16),
               // Avatar chọn ảnh
               Center(
-                child: GestureDetector(
-                  onTap: _showAvatarPicker,
-                  child: CircleAvatar(
-                    radius: 45,
-                    backgroundColor: Colors.grey[400],
-                    backgroundImage: _selectedAvatar != null
-                        ? AssetImage(_selectedAvatar!)
-                        : null,
-                  ),
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.grey[400],
+                      backgroundImage: _selectedAvatar != null
+                          ? AssetImage(_selectedAvatar!)
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showAvatarPicker,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
