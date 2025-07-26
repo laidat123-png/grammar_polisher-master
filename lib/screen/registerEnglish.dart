@@ -115,7 +115,8 @@ class _RegisterEnglishState extends State<RegisterEnglish>
       setState(() {
         _selectedDate = picked;
         _dateOfBirthController.text =
-            "${picked.day}/${picked.month}/${picked.year}";
+            "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+        _touched['dob'] = true; // Mark as touched when date is selected
       });
     }
   }
@@ -328,6 +329,39 @@ class _RegisterEnglishState extends State<RegisterEnglish>
                     if (val == null || val.isEmpty)
                       return 'Vui lòng nhập ngày sinh';
                     if (!val.contains('/')) return 'Ngày sinh không hợp lệ';
+
+                    // Validate age (must be at least 1 year old)
+                    try {
+                      final parts = val.split('/');
+                      if (parts.length == 3) {
+                        final day = int.parse(parts[0]);
+                        final month = int.parse(parts[1]);
+                        final year = int.parse(parts[2]);
+
+                        final birthDate = DateTime(year, month, day);
+                        final now = DateTime.now();
+                        final age = now.year - birthDate.year;
+
+                        // Check if birthday hasn't occurred this year
+                        final hadBirthdayThisYear =
+                            now.month > birthDate.month ||
+                                (now.month == birthDate.month &&
+                                    now.day >= birthDate.day);
+
+                        final actualAge = hadBirthdayThisYear ? age : age - 1;
+
+                        if (actualAge < 1) {
+                          return 'Phải từ 1 tuổi trở lên';
+                        }
+
+                        if (actualAge > 120) {
+                          return 'Tuổi không hợp lệ';
+                        }
+                      }
+                    } catch (e) {
+                      return 'Ngày sinh không hợp lệ';
+                    }
+
                     return null;
                   },
                   textInputAction: TextInputAction.next,

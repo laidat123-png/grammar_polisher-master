@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Grammar Polisher</string>
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID_HERE</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID_HERE</string>
+</resources>

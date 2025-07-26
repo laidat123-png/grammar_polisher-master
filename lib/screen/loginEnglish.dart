@@ -6,6 +6,7 @@ import 'QuenmatkhauEnglish.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginEnglish extends StatefulWidget {
   const LoginEnglish({Key? key}) : super(key: key);
@@ -122,6 +123,117 @@ class _LoginEnglishState extends State<LoginEnglish>
         );
       }
     }
+  }
+
+  // Google Sign In Method using Firebase Auth directly
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Create a GoogleAuthProvider
+      final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+      // Add scopes if needed
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+
+      // Sign in with Google using Firebase Auth
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithProvider(googleProvider);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // Save user info if new
+        if (userCredential.additionalUserInfo?.isNewUser == true) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'email': user.email,
+            'name': user.displayName ?? '',
+            'phone': '',
+            'date_of_birth': '',
+            'avatar': 'assets/images/Audi.png',
+            'created_at': FieldValue.serverTimestamp(),
+            'login_method': 'google',
+          });
+        }
+
+        setState(() {
+          _isLoading = false;
+          _loginSuccess = true;
+        });
+
+        await Future.delayed(const Duration(seconds: 2));
+        setState(() {
+          _loginSuccess = false;
+        });
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+
+        if (mounted) {
+          context.go(RoutePaths.vocabulary);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Đăng nhập Google thất bại';
+      if (e.code == 'account-exists-with-different-credential') {
+        message = 'Tài khoản đã tồn tại với phương thức đăng nhập khác';
+      } else if (e.code == 'invalid-credential') {
+        message = 'Thông tin xác thực không hợp lệ';
+      } else if (e.code == 'network-request-failed') {
+        message = 'Lỗi kết nối mạng. Vui lòng thử lại';
+      } else if (e.code == 'popup-closed-by-user') {
+        // User cancelled - don't show error
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+              backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  // Facebook Sign In Method - Placeholder
+  void _signInWithFacebook() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Ứng dụng đang phát triển'),
+          ],
+        ),
+        backgroundColor: Colors.blue,
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
@@ -317,7 +429,7 @@ class _LoginEnglishState extends State<LoginEnglish>
                           child: _SocialButton(
                             asset: 'assets/images/gg.png',
                             label: 'Google',
-                            onTap: () {},
+                            onTap: _signInWithGoogle,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -325,7 +437,7 @@ class _LoginEnglishState extends State<LoginEnglish>
                           child: _SocialButton(
                             asset: 'assets/images/facebook_logo.png',
                             label: 'Facebook',
-                            onTap: () {},
+                            onTap: _signInWithFacebook,
                           ),
                         ),
                       ],
