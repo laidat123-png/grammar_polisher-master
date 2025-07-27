@@ -311,22 +311,26 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen>
         children: [
           Icon(icon, color: colorScheme.primary),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.grey,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                Text(
+                  value,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis, // Thêm để cắt text dài
+                  maxLines: 2, // Giới hạn số dòng
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
