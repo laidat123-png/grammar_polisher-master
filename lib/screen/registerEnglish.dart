@@ -513,70 +513,70 @@ class _RegisterEnglishState extends State<RegisterEnglish>
                 const SizedBox(height: 10),
 
                 // OR Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'HOẶC',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 10),
+                // Row(
+                //   children: [
+                //     const Expanded(child: Divider()),
+                //     Padding(
+                //       padding: const EdgeInsets.symmetric(horizontal: 10),
+                //       child: Text(
+                //         'HOẶC',
+                //         style: TextStyle(color: Colors.grey[600]),
+                //       ),
+                //     ),
+                //     const Expanded(child: Divider()),
+                //   ],
+                // ),
+                // const SizedBox(height: 10),
 
-                // Social Media Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        icon: Image.asset(
-                          'assets/images/gg.png',
-                          height: 24,
-                          width: 24,
-                          fit: BoxFit.contain,
-                        ),
-                        label: const Text(
-                          'Google',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        icon: Image.asset(
-                          'assets/images/facebook_logo.png',
-                          height: 24,
-                          width: 24,
-                          fit: BoxFit.contain,
-                        ),
-                        label: const Text(
-                          'Facebook',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
+                // // Social Media Buttons
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: OutlinedButton.icon(
+                //         onPressed: () {},
+                //         style: OutlinedButton.styleFrom(
+                //           padding: const EdgeInsets.symmetric(vertical: 12),
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //           ),
+                //         ),
+                //         icon: Image.asset(
+                //           'assets/images/gg.png',
+                //           height: 24,
+                //           width: 24,
+                //           fit: BoxFit.contain,
+                //         ),
+                //         label: const Text(
+                //           'Google',
+                //           style: TextStyle(color: Colors.black),
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 10),
+                //     Expanded(
+                //       child: OutlinedButton.icon(
+                //         onPressed: () {},
+                //         style: OutlinedButton.styleFrom(
+                //           padding: const EdgeInsets.symmetric(vertical: 12),
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //           ),
+                //         ),
+                //         icon: Image.asset(
+                //           'assets/images/facebook_logo.png',
+                //           height: 24,
+                //           width: 24,
+                //           fit: BoxFit.contain,
+                //         ),
+                //         label: const Text(
+                //           'Facebook',
+                //           style: TextStyle(color: Colors.black),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(height: 10),
 
                 // Already have an account? Login
                 Row(

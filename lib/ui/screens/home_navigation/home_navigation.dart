@@ -91,7 +91,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
                     widget.child.shellRouteContext.routerState.uri.path)
             ? StreakButton(
                 onPressed: () {
-                  final streakIndex = HomeNavigation.routes.indexOf(RoutePaths.streak);
+                  final streakIndex =
+                      HomeNavigation.routes.indexOf(RoutePaths.streak);
                   globalTabIndex = streakIndex;
                   widget.child.goBranch(streakIndex);
                 },
